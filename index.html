@@ -32,7 +32,7 @@
     padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
     overscroll-behavior-y: none;
   }
-  main { width: 100%; max-width: 520px; padding: 16px 16px 140px; }
+  main { width: 100%; max-width: 520px; padding: 16px 16px 170px; }
 
   header { text-align: center; padding: 14px 0 4px; }
   header h1 { font-size: 20px; letter-spacing: .08em; }
@@ -73,12 +73,10 @@
     box-shadow: 0 0 0 0 rgba(255,77,109,.45);
   }
   .rec-btn:active { transform: scale(.93); }
-  .rec-btn.recording {
-    animation: pulse 1.6s infinite;
-  }
+  .rec-btn.recording { animation: pulse 1.6s infinite; }
   .rec-btn.recording::after {
     content: ""; position: absolute; inset: 26px;
-    background: #fff; border-radius: 6px; /* 停止の四角 */
+    background: #fff; border-radius: 6px;
   }
   @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(255,77,109,.45); }
@@ -104,7 +102,7 @@
 
   #chunkList { list-style: none; display: flex; flex-direction: column; gap: 10px; }
   .chunk {
-    display: flex; align-items: center; gap: 10px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     background: var(--card);
     border-radius: 14px;
     padding: 12px 12px 12px 6px;
@@ -146,6 +144,57 @@
   }
   .chunk-btn:active { transform: scale(.9); }
   .chunk-btn.del { color: #ff8a9d; }
+  .chunk-btn.gear.open { background: var(--accent); }
+
+  /* ---- BGM設定パネル ---- */
+  .bgm-settings {
+    flex-basis: 100%;
+    background: rgba(0,0,0,.22);
+    border-radius: 12px;
+    margin-top: 10px;
+    padding: 14px 14px 8px;
+    display: none;
+  }
+  .bgm-settings.open { display: block; }
+  .setting-row { margin-bottom: 14px; }
+  .setting-label {
+    display: flex; justify-content: space-between;
+    font-size: 12.5px; margin-bottom: 6px; color: var(--text);
+  }
+  .setting-label .val { color: var(--accent-hi); font-weight: 700; font-variant-numeric: tabular-nums; }
+  input[type="range"] {
+    width: 100%; -webkit-appearance: none; appearance: none;
+    height: 6px; border-radius: 3px; background: rgba(255,255,255,.15);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent-hi); cursor: pointer;
+    border: 3px solid #fff;
+  }
+  .setting-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 13px; padding: 6px 0 12px;
+  }
+  .toggle-sw { position: relative; width: 50px; height: 30px; flex-shrink: 0; }
+  .toggle-sw input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0; border-radius: 999px;
+    background: rgba(255,255,255,.15); transition: background .2s; cursor: pointer;
+  }
+  .toggle-track::after {
+    content: ""; position: absolute; top: 3px; left: 3px;
+    width: 24px; height: 24px; border-radius: 50%; background: #fff;
+    transition: transform .2s;
+  }
+  .toggle-sw input:checked + .toggle-track { background: var(--ok); }
+  .toggle-sw input:checked + .toggle-track::after { transform: translateX(20px); }
+  .overlay-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    background: rgba(77,213,153,.2); color: var(--ok);
+    border-radius: 6px; padding: 2px 6px; margin-left: 6px; vertical-align: 1px;
+  }
 
   .empty {
     text-align: center; color: var(--text-dim); font-size: 13px;
@@ -163,7 +212,7 @@
   }
   .bgm-add:active { transform: scale(.98); }
 
-  /* ---- フッター（書き出し） ---- */
+  /* ---- フッター（試聴・書き出し） ---- */
   .export-bar {
     position: fixed; left: 0; right: 0; bottom: 0;
     display: flex; flex-direction: column; align-items: center;
@@ -173,15 +222,23 @@
     border-top: 1px solid rgba(255,255,255,.08);
   }
   .export-bar-inner { width: 100%; max-width: 520px; }
+  .btn-row { display: flex; gap: 10px; }
+  .preview-btn {
+    flex: 1; padding: 15px 8px; border: none; border-radius: 14px;
+    background: rgba(255,255,255,.1); color: var(--text);
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: opacity .15s, transform .12s;
+  }
+  .preview-btn.playing { background: var(--ok); color: #10281d; }
   .export-btn {
-    width: 100%; padding: 16px; border: none; border-radius: 14px;
+    flex: 1.4; padding: 15px 8px; border: none; border-radius: 14px;
     background: linear-gradient(135deg, var(--accent) 0%, #6a4de0 100%);
-    color: #fff; font-size: 16px; font-weight: 700; letter-spacing: .04em;
+    color: #fff; font-size: 14px; font-weight: 700; letter-spacing: .02em;
     cursor: pointer; transition: opacity .15s, transform .12s;
   }
-  .export-btn:active { transform: scale(.98); }
-  .export-btn[disabled] { opacity: .4; pointer-events: none; }
-  .export-status { text-align: center; font-size: 12px; color: var(--text-dim); height: 16px; margin-top: 7px; }
+  .preview-btn:active, .export-btn:active { transform: scale(.98); }
+  .preview-btn[disabled], .export-btn[disabled] { opacity: .4; pointer-events: none; }
+  .export-status { text-align: center; font-size: 12px; color: var(--text-dim); min-height: 16px; margin-top: 7px; }
   .export-status.ok { color: var(--ok); font-weight: 600; }
   .export-status.err { color: #ff8a9d; font-weight: 600; }
 
@@ -220,7 +277,7 @@
 
   <section class="chunks">
     <div class="chunks-head">
-      <h2>チャンク（並べ替え：≡ をドラッグ）</h2>
+      <h2>チャンク</h2>
       <span class="total-dur" id="totalDur"></span>
     </div>
     <ul id="chunkList"></ul>
@@ -234,7 +291,10 @@
 
 <div class="export-bar">
   <div class="export-bar-inner">
-    <button class="export-btn" id="exportBtn" disabled>📦 1本にまとめて書き出す</button>
+    <div class="btn-row">
+      <button class="preview-btn" id="mixPreviewBtn" disabled>🎧 ミックス試聴</button>
+      <button class="export-btn" id="exportBtn" disabled>📦 書き出す</button>
+    </div>
     <div class="export-status" id="exportStatus"></div>
   </div>
 </div>
@@ -250,8 +310,10 @@
 <script>
 "use strict";
 /* ============================================================
-   ポケット収録 — Anchor復刻MVP
-   収録(チャンク) / 並べ替え / BGM挿入 / WAV書き出し
+   ポケット収録 — Anchor復刻MVP v2
+   収録(チャンク) / 並べ替え / BGMミックス(重ね・ダッキング) / WAV書き出し
+   BGMは「重ねる」モード：イントロはBGMだけ→声が入るとBGM音量を
+   自動で下げる（ダッキング）→トーク終了後アウトロ→フェードアウト。
    すべてブラウザ内で完結。サーバー・ログイン不要。
    ============================================================ */
 
@@ -260,9 +322,13 @@ const timerEl = $("timer"), recStateEl = $("recState");
 const recBtn = $("recBtn"), pauseBtn = $("pauseBtn");
 const listEl = $("chunkList"), emptyMsg = $("emptyMsg"), totalDurEl = $("totalDur");
 const exportBtn = $("exportBtn"), exportStatus = $("exportStatus");
+const mixPreviewBtn = $("mixPreviewBtn");
 
 const state = {
-  chunks: [],        // { id, type:'talk'|'bgm', name, blob, duration, url }
+  // talk: { id, type:'talk', name, blob, duration, url }
+  // bgm : { id, type:'bgm', name, blob, duration, url,
+  //         overlay, intro, duck, outro, loop, settingsOpen }
+  chunks: [],
   talkCount: 0,
   recording: false,
   paused: false,
@@ -287,7 +353,7 @@ function pickMime() {
   if (window.MediaRecorder && MediaRecorder.isTypeSupported) {
     for (const t of cands) if (MediaRecorder.isTypeSupported(t)) return t;
   }
-  return ""; // ブラウザ任せ
+  return "";
 }
 
 function currentElapsed() {
@@ -296,7 +362,7 @@ function currentElapsed() {
 function tickTimer() { timerEl.textContent = fmt(currentElapsed()); }
 
 async function requestWakeLock() {
-  try { wakeLock = await navigator.wakeLock?.request("screen"); } catch (_) { /* 非対応でもOK */ }
+  try { wakeLock = await navigator.wakeLock?.request("screen"); } catch (_) {}
 }
 function releaseWakeLock() { try { wakeLock?.release(); } catch (_) {} wakeLock = null; }
 
@@ -322,7 +388,7 @@ async function startRecording() {
   }
   mediaRecorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) recParts.push(e.data); };
   mediaRecorder.onstop = onRecorderStopped;
-  mediaRecorder.start(1000); // 1秒毎にデータ確保（途中クラッシュ対策）
+  mediaRecorder.start(1000);
 
   state.recording = true;
   state.paused = false;
@@ -335,11 +401,7 @@ async function startRecording() {
 
 function stopRecording() {
   if (!mediaRecorder) return;
-  if (state.paused) {
-    // pause中のstopでも経過時間は確定済み
-  } else {
-    elapsedBase += (performance.now() - segStart) / 1000;
-  }
+  if (!state.paused) elapsedBase += (performance.now() - segStart) / 1000;
   state.recording = false;
   state.paused = false;
   clearInterval(timerInterval);
@@ -366,12 +428,8 @@ function onRecorderStopped() {
   }
   state.talkCount++;
   addChunk({
-    id: uid(),
-    type: "talk",
-    name: `トーク ${state.talkCount}`,
-    blob,
-    duration: dur,
-    url: null,
+    id: uid(), type: "talk", name: `トーク ${state.talkCount}`,
+    blob, duration: dur, url: null,
   });
   recStateEl.textContent = "チャンクを追加しました ✓";
 }
@@ -424,6 +482,7 @@ pauseBtn.addEventListener("click", pauseResume);
 /* ---------- チャンク管理 ---------- */
 function addChunk(chunk) {
   state.chunks.push(chunk);
+  invalidateMix();
   renderList();
 }
 
@@ -434,6 +493,7 @@ function removeChunk(id) {
   if (playingId === id) stopPlayback();
   if (c.url) URL.revokeObjectURL(c.url);
   state.chunks.splice(i, 1);
+  invalidateMix();
   renderList();
 }
 
@@ -442,17 +502,169 @@ function chunkUrl(chunk) {
   return chunk.url;
 }
 
-function totalDuration() {
-  return state.chunks.reduce((a, c) => a + (c.duration || 0), 0);
+/* ---------- タイムライン計算（表示・書き出し共通） ----------
+   チャンクの並び順から、各チャンクの開始時刻とBGMの
+   ダッキング区間・終了時刻を決める。
+   - talk / 単独BGM: 直列に並ぶ
+   - 重ねるBGM: その位置から開始。イントロ秒はBGMだけ。
+     その後のトークはBGMの上に重なり、BGM音量はduck%へ。
+     全トーク終了後、アウトロ秒だけ100%に戻して流しフェードアウト。
+     次の重ねるBGMが始まったら前のBGMはそこで終了（クロスフェード）。 */
+function buildTimeline() {
+  let t = 0;
+  const serial = [];  // { chunk, start }  … talk と 単独BGM
+  const bgms = [];    // { chunk, start, forcedEnd }
+  let openBgm = null;
+  for (const c of state.chunks) {
+    if (c.type === "bgm" && c.overlay) {
+      if (openBgm) openBgm.forcedEnd = t + 0.8; // 次のBGM開始で前のBGMをフェード終了
+      const b = { chunk: c, start: t, forcedEnd: null };
+      bgms.push(b);
+      openBgm = b;
+      t += Math.max(0, c.intro);
+    } else {
+      serial.push({ chunk: c, start: t });
+      t += c.duration || 0;
+    }
+  }
+  const voiceEnd = t; // 直列要素の終端
+
+  let total = voiceEnd;
+  for (const b of bgms) {
+    const c = b.chunk;
+    const talksAfter = serial.some((s) => s.start >= b.start - 0.01);
+    b.voiceStart = b.start + Math.max(0, c.intro);
+    let end;
+    if (b.forcedEnd != null) {
+      end = b.forcedEnd;
+      b.duckStart = talksAfter && b.voiceStart < end ? b.voiceStart : null;
+      b.duckEnd = b.duckStart != null ? end : null;
+    } else if (!talksAfter) {
+      end = b.start + (c.loop ? Math.max(0, c.intro) + Math.max(0, c.outro) + 5 : c.duration);
+      b.duckStart = null; b.duckEnd = null;
+    } else {
+      end = voiceEnd + Math.max(0, c.outro);
+      b.duckStart = b.voiceStart < voiceEnd ? b.voiceStart : null;
+      b.duckEnd = b.duckStart != null ? voiceEnd : null;
+    }
+    if (!c.loop) end = Math.min(end, b.start + c.duration);
+    b.end = Math.max(end, b.start + 0.5);
+    total = Math.max(total, b.end);
+  }
+  return { serial, bgms, voiceEnd, total };
 }
 
-/* ---------- 試聴 ---------- */
+function totalDuration() { return buildTimeline().total; }
+
+/* ---------- ミックスレンダリング（試聴・書き出し共通） ---------- */
+let mixCache = null; // { blob, duration } — チャンク変更で破棄
+function invalidateMix() {
+  mixCache = null;
+  stopMixPreview();
+}
+
+// Safari旧実装はコールバック形式のみのことがあるためラップ
+function decodeAudio(ctx, arrayBuffer) {
+  return new Promise((resolve, reject) => {
+    const p = ctx.decodeAudioData(arrayBuffer, resolve, reject);
+    if (p && typeof p.then === "function") p.then(resolve, reject);
+  });
+}
+
+async function renderMix(onProgress) {
+  const tl = buildTimeline();
+  if (tl.total <= 0) throw new Error("音声が空です");
+
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AC();
+  try {
+    // 全チャンクをデコード
+    const bufMap = new Map();
+    const all = [...tl.serial.map(s => s.chunk), ...tl.bgms.map(b => b.chunk)];
+    for (let i = 0; i < all.length; i++) {
+      onProgress?.(`音声を解析中… (${i + 1}/${all.length})`);
+      const c = all[i];
+      if (bufMap.has(c.id)) continue;
+      const ab = await c.blob.arrayBuffer();
+      bufMap.set(c.id, await decodeAudio(ctx, ab));
+    }
+
+    onProgress?.("ミックス中…");
+    const rate = ctx.sampleRate;
+    const allBufs = [...bufMap.values()];
+    const channels = Math.min(2, Math.max(1, ...allBufs.map((b) => b.numberOfChannels)));
+    const totalFrames = Math.ceil(tl.total * rate);
+    const off = new OfflineAudioContext(channels, totalFrames, rate);
+
+    // 直列要素（トーク・単独BGM）: フル音量で順番に
+    for (const s of tl.serial) {
+      const src = off.createBufferSource();
+      src.buffer = bufMap.get(s.chunk.id);
+      src.connect(off.destination);
+      src.start(s.start);
+    }
+
+    // 重ねるBGM: ゲインオートメーションでダッキング
+    for (const b of tl.bgms) {
+      const c = b.chunk;
+      const buf = bufMap.get(c.id);
+      const src = off.createBufferSource();
+      src.buffer = buf;
+      if (c.loop) src.loop = true;
+      const gain = off.createGain();
+      src.connect(gain);
+      gain.connect(off.destination);
+
+      const duck = Math.max(0, Math.min(1, c.duck / 100));
+      // ゲインポイント列を組み立て → 単調増加に整えて適用
+      const pts = [];
+      pts.push([b.start, 0], [b.start + 0.4, 1]); // フェードイン
+      if (b.duckStart != null && b.duckEnd > b.duckStart + 0.05) {
+        pts.push([Math.max(b.duckStart - 0.4, b.start + 0.45), 1], [b.duckStart, duck]); // 声が入る→下げる
+        if (b.end > b.duckEnd + 1.2) {
+          pts.push([b.duckEnd, duck], [b.duckEnd + 0.8, 1]); // トーク終了→戻す（アウトロ）
+        }
+      }
+      const fadeDur = Math.min(2.5, Math.max(0.3, (b.end - b.start) * 0.25));
+      pts.push([b.end - fadeDur, null], [b.end, 0]); // フェードアウト（null=直前の値を維持）
+
+      let prevT = -1, prevV = 0;
+      let first = true;
+      for (const [pt, pv] of pts) {
+        const tt = Math.max(pt, prevT + 0.02);
+        const vv = pv == null ? prevV : pv;
+        if (first) { gain.gain.setValueAtTime(vv, Math.max(0, tt)); first = false; }
+        else gain.gain.linearRampToValueAtTime(vv, tt);
+        prevT = tt; prevV = vv;
+      }
+
+      src.start(b.start);
+      src.stop(b.end);
+    }
+
+    const rendered = await off.startRendering();
+    onProgress?.("WAVファイルを作成中…");
+    const blob = encodeWav(rendered);
+    return { blob, duration: rendered.duration };
+  } finally {
+    try { ctx.close(); } catch (_) {}
+  }
+}
+
+async function getMix(onProgress) {
+  if (mixCache) return mixCache;
+  mixCache = await renderMix(onProgress);
+  return mixCache;
+}
+
+/* ---------- チャンク単体の試聴 ---------- */
 const player = new Audio();
 let playingId = null;
 player.addEventListener("ended", () => { playingId = null; refreshPlayIcons(); });
 player.addEventListener("pause", () => { refreshPlayIcons(); });
 
 function togglePlay(chunk) {
+  stopMixPreview();
   if (playingId === chunk.id && !player.paused) {
     player.pause();
     playingId = null;
@@ -479,6 +691,40 @@ function refreshPlayIcons() {
   }
 }
 
+/* ---------- ミックス試聴 ---------- */
+const mixPlayer = new Audio();
+let mixPlaying = false, mixUrl = null;
+mixPlayer.addEventListener("ended", () => { mixPlaying = false; updateMixBtn(); });
+
+function updateMixBtn() {
+  mixPreviewBtn.classList.toggle("playing", mixPlaying);
+  mixPreviewBtn.textContent = mixPlaying ? "⏹ 停止" : "🎧 ミックス試聴";
+}
+function stopMixPreview() {
+  if (mixPlaying) { mixPlayer.pause(); mixPlaying = false; }
+  updateMixBtn();
+}
+mixPreviewBtn.addEventListener("click", async () => {
+  if (mixPlaying) { stopMixPreview(); return; }
+  stopPlayback();
+  mixPreviewBtn.disabled = true;
+  try {
+    const mix = await getMix(setStatus);
+    if (mixUrl) URL.revokeObjectURL(mixUrl);
+    mixUrl = URL.createObjectURL(mix.blob);
+    mixPlayer.src = mixUrl;
+    await mixPlayer.play();
+    mixPlaying = true;
+    setStatus(`ミックス再生中（${fmt(mix.duration)}）`);
+  } catch (err) {
+    console.error("mix preview failed:", err);
+    setStatus("試聴に失敗しました：" + (err && err.message ? err.message : err), "err");
+  } finally {
+    mixPreviewBtn.disabled = state.chunks.length === 0;
+    updateMixBtn();
+  }
+});
+
 /* ---------- リスト描画 ---------- */
 function renderList() {
   listEl.innerHTML = "";
@@ -501,9 +747,21 @@ function renderList() {
     const nm = document.createElement("div");
     nm.className = "chunk-name";
     nm.textContent = chunk.name;
+    if (chunk.type === "bgm" && chunk.overlay) {
+      const badge = document.createElement("span");
+      badge.className = "overlay-badge";
+      badge.textContent = "重ねる";
+      nm.appendChild(badge);
+    }
     const meta = document.createElement("div");
     meta.className = "chunk-meta";
-    meta.textContent = (chunk.type === "talk" ? "トーク・" : "BGM・") + fmt(chunk.duration);
+    if (chunk.type === "talk") {
+      meta.textContent = "トーク・" + fmt(chunk.duration);
+    } else if (chunk.overlay) {
+      meta.textContent = `イントロ${chunk.intro}秒・トーク中${chunk.duck}%・アウトロ${chunk.outro}秒${chunk.loop ? "・ループ" : ""}`;
+    } else {
+      meta.textContent = "BGM（単独）・" + fmt(chunk.duration);
+    }
     info.append(nm, meta);
 
     const playBtn = document.createElement("button");
@@ -519,12 +777,125 @@ function renderList() {
     delBtn.addEventListener("click", () => confirmDelete(chunk));
 
     li.append(handle, icon, info, playBtn, delBtn);
+
+    // BGMは設定ボタン＋設定パネル
+    if (chunk.type === "bgm") {
+      const gearBtn = document.createElement("button");
+      gearBtn.className = "chunk-btn gear" + (chunk.settingsOpen ? " open" : "");
+      gearBtn.textContent = "⚙️";
+      gearBtn.setAttribute("aria-label", "BGM設定");
+      li.insertBefore(gearBtn, playBtn);
+
+      const panel = buildBgmSettings(chunk);
+      li.appendChild(panel);
+      gearBtn.addEventListener("click", () => {
+        chunk.settingsOpen = !chunk.settingsOpen;
+        gearBtn.classList.toggle("open", chunk.settingsOpen);
+        panel.classList.toggle("open", chunk.settingsOpen);
+      });
+    }
+
     listEl.appendChild(li);
   }
   emptyMsg.style.display = state.chunks.length ? "none" : "";
-  totalDurEl.textContent = state.chunks.length ? `合計 ${fmt(totalDuration())}` : "";
+  totalDurEl.textContent = state.chunks.length ? `ミックス後 ${fmt(totalDuration())}` : "";
   exportBtn.disabled = state.chunks.length === 0;
+  mixPreviewBtn.disabled = state.chunks.length === 0;
   refreshPlayIcons();
+}
+
+function buildBgmSettings(chunk) {
+  const panel = document.createElement("div");
+  panel.className = "bgm-settings" + (chunk.settingsOpen ? " open" : "");
+
+  // 重ねるトグル
+  const toggleRow = document.createElement("div");
+  toggleRow.className = "setting-toggle";
+  toggleRow.innerHTML = `<span>トークに重ねて流す（Anchor方式）</span>`;
+  const sw = document.createElement("label");
+  sw.className = "toggle-sw";
+  const cb = document.createElement("input");
+  cb.type = "checkbox";
+  cb.checked = chunk.overlay;
+  const track = document.createElement("span");
+  track.className = "toggle-track";
+  sw.append(cb, track);
+  toggleRow.appendChild(sw);
+  panel.appendChild(toggleRow);
+
+  const sliderBox = document.createElement("div");
+  panel.appendChild(sliderBox);
+
+  function slider(label, min, max, step, value, unit, onInput) {
+    const row = document.createElement("div");
+    row.className = "setting-row";
+    const lab = document.createElement("div");
+    lab.className = "setting-label";
+    const valEl = document.createElement("span");
+    valEl.className = "val";
+    valEl.textContent = value + unit;
+    lab.innerHTML = `<span>${label}</span>`;
+    lab.appendChild(valEl);
+    const input = document.createElement("input");
+    input.type = "range";
+    input.min = min; input.max = max; input.step = step; input.value = value;
+    input.addEventListener("input", () => {
+      valEl.textContent = input.value + unit;
+      onInput(Number(input.value));
+      invalidateMix();
+      totalDurEl.textContent = `ミックス後 ${fmt(totalDuration())}`;
+      updateBgmMeta();
+    });
+    row.append(lab, input);
+    return row;
+  }
+
+  function updateBgmMeta() {
+    const li = listEl.querySelector(`[data-id="${chunk.id}"]`);
+    const meta = li?.querySelector(".chunk-meta");
+    if (meta && chunk.overlay) {
+      meta.textContent = `イントロ${chunk.intro}秒・トーク中${chunk.duck}%・アウトロ${chunk.outro}秒${chunk.loop ? "・ループ" : ""}`;
+    }
+  }
+
+  function rebuildSliders() {
+    sliderBox.innerHTML = "";
+    if (!chunk.overlay) return;
+    sliderBox.appendChild(slider("イントロ（BGMだけ流す時間）", 0, 60, 1, chunk.intro, "秒", (v) => { chunk.intro = v; }));
+    sliderBox.appendChild(slider("トーク中のBGM音量", 0, 100, 5, chunk.duck, "%", (v) => { chunk.duck = v; }));
+    sliderBox.appendChild(slider("アウトロ（トーク後に流す時間）", 0, 30, 1, chunk.outro, "秒", (v) => { chunk.outro = v; }));
+
+    const loopRow = document.createElement("div");
+    loopRow.className = "setting-toggle";
+    loopRow.innerHTML = `<span>BGMが短い場合はループさせる</span>`;
+    const lsw = document.createElement("label");
+    lsw.className = "toggle-sw";
+    const lcb = document.createElement("input");
+    lcb.type = "checkbox";
+    lcb.checked = chunk.loop;
+    const ltrack = document.createElement("span");
+    ltrack.className = "toggle-track";
+    lsw.append(lcb, ltrack);
+    loopRow.appendChild(lsw);
+    lcb.addEventListener("change", () => {
+      chunk.loop = lcb.checked;
+      invalidateMix();
+      totalDurEl.textContent = `ミックス後 ${fmt(totalDuration())}`;
+      updateBgmMeta();
+    });
+    sliderBox.appendChild(loopRow);
+  }
+
+  cb.addEventListener("change", () => {
+    chunk.overlay = cb.checked;
+    invalidateMix();
+    rebuildSliders();
+    renderList(); // バッジ・メタ表示更新
+    // 再描画でパネルが作り直されるため、開いた状態を維持
+  });
+
+  rebuildSliders();
+  return panel;
 }
 
 /* ---------- 削除確認 ---------- */
@@ -572,9 +943,10 @@ function startDrag(e, li) {
     handle.removeEventListener("pointercancel", onUp);
     if (dragLi) dragLi.classList.remove("dragging");
     dragLi = null;
-    // DOMの順序を state に反映
     const order = [...listEl.children].map((el) => el.dataset.id);
     state.chunks.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    invalidateMix();
+    totalDurEl.textContent = state.chunks.length ? `ミックス後 ${fmt(totalDuration())}` : "";
   };
   handle.addEventListener("pointermove", onMove);
   handle.addEventListener("pointerup", onUp);
@@ -590,12 +962,12 @@ $("bgmInput").addEventListener("change", async (e) => {
     try { dur = await getBlobDuration(file); }
     catch (err) { console.warn("duration取得失敗:", err); }
     addChunk({
-      id: uid(),
-      type: "bgm",
+      id: uid(), type: "bgm",
       name: file.name.replace(/\.[^.]+$/, ""),
-      blob: file,
-      duration: dur,
-      url: null,
+      blob: file, duration: dur, url: null,
+      // Anchor方式のデフォルト：重ねる・イントロ20秒・トーク中40%・アウトロ8秒・ループ
+      overlay: true, intro: 20, duck: 40, outro: 8, loop: true,
+      settingsOpen: true, // 追加直後は設定を開いて見せる
     });
   }
 });
@@ -608,7 +980,6 @@ function getBlobDuration(blob) {
     const done = (d) => { URL.revokeObjectURL(url); resolve(d); };
     a.onloadedmetadata = () => {
       if (isFinite(a.duration) && a.duration > 0) return done(a.duration);
-      // Chrome の webm duration=Infinity バグ回避
       a.currentTime = 1e7;
       a.ontimeupdate = () => { a.ontimeupdate = null; done(a.duration); a.currentTime = 0; };
     };
@@ -617,75 +988,34 @@ function getBlobDuration(blob) {
   });
 }
 
-/* ---------- 書き出し（結合 → WAV） ---------- */
+/* ---------- 書き出し ---------- */
 exportBtn.addEventListener("click", exportAll);
 
 async function exportAll() {
   if (state.chunks.length === 0) return;
   stopPlayback();
+  stopMixPreview();
   exportBtn.disabled = true;
-  setStatus("音声を解析中…");
-
-  const AC = window.AudioContext || window.webkitAudioContext;
-  const ctx = new AC();
   try {
-    // 1) 全チャンクをデコード
-    const buffers = [];
-    for (let i = 0; i < state.chunks.length; i++) {
-      setStatus(`音声を解析中… (${i + 1}/${state.chunks.length})`);
-      const ab = await state.chunks[i].blob.arrayBuffer();
-      const buf = await decodeAudio(ctx, ab);
-      buffers.push(buf);
-    }
-
-    // 2) 直列に連結してレンダリング
-    setStatus("結合中…");
-    const rate = ctx.sampleRate;
-    const channels = Math.min(2, Math.max(...buffers.map((b) => b.numberOfChannels)));
-    const totalFrames = buffers.reduce((a, b) => a + Math.ceil(b.duration * rate), 0);
-    if (totalFrames === 0) throw new Error("音声が空です");
-
-    const off = new OfflineAudioContext(channels, totalFrames, rate);
-    let t = 0;
-    for (const buf of buffers) {
-      const src = off.createBufferSource();
-      src.buffer = buf;
-      src.connect(off.destination);
-      src.start(t);
-      t += buf.duration;
-    }
-    const rendered = await off.startRendering();
-
-    // 3) WAVエンコード → ダウンロード
-    setStatus("WAVファイルを作成中…");
-    const wavBlob = encodeWav(rendered);
+    const mix = await getMix(setStatus);
     const d = new Date();
     const pad = (n) => String(n).padStart(2, "0");
     const fname = `podcast_${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.wav`;
-    downloadBlob(wavBlob, fname);
-    setStatus(`✓ 書き出し完了：${fname}（${(wavBlob.size / 1024 / 1024).toFixed(1)} MB）`, "ok");
+    downloadBlob(mix.blob, fname);
+    setStatus(`✓ 書き出し完了：${fname}（${(mix.blob.size / 1024 / 1024).toFixed(1)} MB）`, "ok");
   } catch (err) {
     console.error("export failed:", err);
     setStatus("書き出しに失敗しました：" + (err && err.message ? err.message : err), "err");
   } finally {
-    try { ctx.close(); } catch (_) {}
     exportBtn.disabled = state.chunks.length === 0;
   }
-}
-
-// Safari旧実装はコールバック形式のみのことがあるためラップ
-function decodeAudio(ctx, arrayBuffer) {
-  return new Promise((resolve, reject) => {
-    const p = ctx.decodeAudioData(arrayBuffer, resolve, reject);
-    if (p && typeof p.then === "function") p.then(resolve, reject);
-  });
 }
 
 function encodeWav(audioBuffer) {
   const numCh = audioBuffer.numberOfChannels;
   const rate = audioBuffer.sampleRate;
   const frames = audioBuffer.length;
-  const bytesPerSample = 2; // 16-bit PCM
+  const bytesPerSample = 2;
   const blockAlign = numCh * bytesPerSample;
   const dataSize = frames * blockAlign;
   const buffer = new ArrayBuffer(44 + dataSize);
@@ -697,7 +1027,7 @@ function encodeWav(audioBuffer) {
   writeStr(8, "WAVE");
   writeStr(12, "fmt ");
   view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true);            // PCM
+  view.setUint16(20, 1, true);
   view.setUint16(22, numCh, true);
   view.setUint32(24, rate, true);
   view.setUint32(28, rate * blockAlign, true);
@@ -706,7 +1036,6 @@ function encodeWav(audioBuffer) {
   writeStr(36, "data");
   view.setUint32(40, dataSize, true);
 
-  // チャンネルをインターリーブしつつ16bit化
   const chData = [];
   for (let c = 0; c < numCh; c++) chData.push(audioBuffer.getChannelData(c));
   let off = 44;
@@ -747,7 +1076,7 @@ window.addEventListener("beforeunload", (e) => {
 
 /* ---------- 初期化・テスト用フック ---------- */
 renderList();
-window.__app = { state, addChunk, removeChunk, exportAll, encodeWav, fmt, renderList };
+window.__app = { state, addChunk, removeChunk, exportAll, renderMix, getMix, buildTimeline, encodeWav, fmt, renderList };
 </script>
 </body>
 </html>
